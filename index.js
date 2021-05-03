@@ -26,7 +26,7 @@ mongoose.connect("mongodb://localhost:27017/wikiDB", { useNewUrlParser: true });
 // now code specific to a server
 
 const articleSchema = new mongoose.Schema({
-  name: String,
+  title: String,
   content: String,
 });
 
@@ -35,7 +35,13 @@ const articleSchema = new mongoose.Schema({
 
 const Article = mongoose.model("Article", articleSchema);
 
-app.route("/articles")
+/**
+ * The route targetting all the articles
+ *
+ */
+
+app
+  .route("/articles")
   .get(function (req, res) {
     Article.find(function (err, articles) {
       if (err) {
@@ -68,6 +74,22 @@ app.route("/articles")
       }
     });
   });
+
+/**
+ * The route targetting a specific article.
+ *
+ */
+
+app.route("/articles/:articleTitle").
+get(function (req, res) {
+  Article.findOne({ title: req.params.articleTitle }, function (err, article) {
+    if (err) {
+      res.send(res);
+    } else {
+      res.send(article);
+    }
+  });
+});
 
 // start listening to the port.
 app.listen(process.env.PORT || 3000, function () {
