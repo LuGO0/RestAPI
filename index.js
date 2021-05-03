@@ -61,7 +61,7 @@ app
       if (err) {
         res.send(err);
       } else {
-        res.send("request successful article saved");
+        res.send("Successfully posted article");
       }
     });
   })
@@ -80,16 +80,58 @@ app
  *
  */
 
-app.route("/articles/:articleTitle").
-get(function (req, res) {
-  Article.findOne({ title: req.params.articleTitle }, function (err, article) {
-    if (err) {
-      res.send(res);
-    } else {
-      res.send(article);
-    }
+app
+  .route("/articles/:articleTitle")
+  .get(function (req, res) {
+    Article.findOne(
+      { title: req.params.articleTitle },
+      function (err, article) {
+        if (err) {
+          res.send(res);
+        } else {
+          res.send(article);
+        }
+      }
+    );
+  })
+  .put(function (req, res) {
+    Article.update(
+      { title: req.params.articleTitle },
+      { title: req.body.title, content: req.body.content },
+      { overwrite: true },
+      function (err) {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send("SuccessFully Updated");
+        }
+      }
+    );
+  })
+  .patch(function (req, res) {
+    Article.update(
+      { title: req.params.articleTitle },
+      { $set: req.body },
+      function (err) {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send("SuccessFully patched");
+        }
+      }
+    );
+  })
+  .delete(function (req, res) {
+    Article.deleteOne(
+        { title: req.params.articleTitle }, 
+        function (err) {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send("SuccessFully Deleted article");
+      }
+    });
   });
-});
 
 // start listening to the port.
 app.listen(process.env.PORT || 3000, function () {
